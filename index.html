@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#eef6ff">
-<title>LEGO Sorter v0.6.1</title>
+<title>LEGO Sorter v0.6.2</title>
 <style>
 :root{--bg:#eef6ff;--card:#fff;--text:#142235;--muted:#617083;--blue:#1267d8;--green:#197a4f;--red:#a12b2b;--orange:#8a5d00;--line:#d8e5f1;--shadow:0 12px 32px rgba(26,66,106,.12)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:linear-gradient(180deg,#e8f3ff,#f9fbfe);color:var(--text)}
@@ -23,14 +23,15 @@ label{display:block;font-weight:700;font-size:13px;margin:14px 0 6px}textarea,in
 .scanBox{border:2px dashed #bfd3e6;border-radius:18px;padding:14px;text-align:center;background:#f8fbff}.fileInput{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;clip-path:inset(50%)!important}.fileLabel{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:14px;padding:14px 18px;font-weight:800;font-size:17px;cursor:pointer;touch-action:manipulation;background:var(--blue);color:#fff;margin:0}.fileLabel.secondary{background:#edf4fb;color:#16324f}.preview{width:100%;max-height:340px;object-fit:contain;border-radius:14px;background:#eef3f7;margin-top:12px}.hidden{display:none!important}
 .results{display:grid;gap:10px;margin-top:12px}.candidate{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;display:grid;grid-template-columns:70px 1fr;gap:12px;align-items:center}.candidate img{width:70px;height:70px;object-fit:contain;background:#f3f6f9;border-radius:10px}.candidate .score{font-weight:900;color:var(--green)}
 .match{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:center}.match img{width:76px;height:58px;object-fit:contain;background:#f2f5f8;border-radius:10px}.match strong{display:block}.match .qty{font-weight:900;font-size:17px;color:var(--blue)}
+.assignCtl{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.assignCtl button{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-weight:800;background:#f5f9fd;color:#173b5c}.assignCtl .done{background:#e9f7ef;color:var(--green)}.assignCtl .minus{background:#fff7f0;color:#8a5d00}.assignmentRow{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.assignmentRow .count{font-weight:900;color:var(--blue)}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tabs a{text-decoration:none;border:1px solid var(--line);background:#fff;color:#193753;border-radius:999px;padding:9px 12px;font-weight:800;font-size:13px}
 .debug{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;word-break:break-word;background:#101923;color:#d9e8f6;border-radius:14px;padding:12px;max-height:220px;overflow:auto;margin-top:12px}
 </style>
 </head>
 <body>
 <main>
-<header><div class="logo">🧱</div><div class="title"><h1>LEGO Sorter v0.6.1</h1><p>Rebrickable-Inventare · Brickognize · iPad-Kamera</p></div></header>
-<nav class="tabs"><a href="#scan">📷 Teil scannen</a><a href="#sets">🧰 Sets</a><a href="#api">🔑 Rebrickable</a><a href="#diag">🛠 Diagnose</a></nav>
+<header><div class="logo">🧱</div><div class="title"><h1>LEGO Sorter v0.6.2</h1><p>Rebrickable-Inventare · Brickognize · iPad-Kamera</p></div></header>
+<nav class="tabs"><a href="#scan">📷 Teil scannen</a><a href="#assignments">✅ Zuordnungen</a><a href="#sets">🧰 Sets</a><a href="#api">🔑 Rebrickable</a><a href="#diag">🛠 Diagnose</a></nav>
 
 <section class="card" id="scan">
 <h2>1. Teil scannen</h2>
@@ -51,8 +52,16 @@ label{display:block;font-weight:700;font-size:13px;margin:14px 0 6px}textarea,in
 <div id="matchWrap" class="hidden"><h3>Passende Sets aus deiner Sammlung</h3><div id="matches" class="results"></div></div>
 </section>
 
+<section class="card" id="assignments">
+<h2>2. Bereits zugeordnete Teile</h2>
+<p class="muted">Hier siehst du alles, was du beim Sortieren bereits einem Set zugeordnet hast. Vollständig zugeordnete Teile werden beim Scannen für dieses Set nicht mehr vorgeschlagen. Fehler kannst du hier jederzeit mit −1, +1 oder „Zurücksetzen“ korrigieren.</p>
+<div class="row"><button class="btn secondary" id="undoLastAssignment" type="button" disabled>↶ Letzte Zuordnung rückgängig</button><button class="btn secondary" id="clearAssignments" type="button">Alle Zuordnungen löschen</button></div>
+<div id="assignmentStatus" class="status">Noch keine Teile zugeordnet.</div>
+<div id="assignmentList" class="results"></div>
+</section>
+
 <section class="card" id="sets">
-<h2>2. Deine Sets verwalten</h2>
+<h2>3. Deine Sets verwalten</h2>
 <p class="muted">Neue Sets kannst du jederzeit hinzufügen. Nach dem Hinzufügen werden Setdaten und Inventar direkt von Rebrickable geladen. „Gebaut“ nimmt das Set aus der Teilesuche heraus.</p>
 <div class="kpis"><div class="kpi"><b id="countAll">0</b><span>Sets gesamt</span></div><div class="kpi"><b id="countLoaded">0</b><span>Setdaten</span></div><div class="kpi"><b id="countInventory">0</b><span>Inventare</span></div><div class="kpi"><b id="countBuilt">0</b><span>gebaut</span></div><div class="kpi"><b id="countSearch">0</b><span>in Suche</span></div></div>
 <div class="grid2">
@@ -66,7 +75,7 @@ label{display:block;font-weight:700;font-size:13px;margin:14px 0 6px}textarea,in
 </section>
 
 <section class="card" id="api">
-<h2>3. Rebrickable</h2>
+<h2>4. Rebrickable</h2>
 <p class="muted">Dein vorhandener API-Key aus v0.5 wird automatisch übernommen. Er bleibt ausschließlich im lokalen Browser-Speicher dieser GitHub-Pages-Adresse.</p>
 <label for="rbKey">Rebrickable API-Key</label>
 <textarea id="rbKey" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="API-Key hier einfügen"></textarea>
@@ -108,7 +117,7 @@ function safeSet(k,v){try{localStorage.setItem(k,v);return true}catch(e){log('Lo
 function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
 
-let state={sets:initial};
+let state={sets:initial,assignments:{},assignmentHistory:[]};
 function saveState(){safeSet(STATE_KEY,JSON.stringify(state));}
 function loadState(){
  try{
@@ -120,6 +129,8 @@ function loadState(){
   for(const s of old.sets){const base=byNum.get(s.set_num)||blankSet(s.category||'Ohne Kategorie',s.set_num);merged.push({...base,...s,inventoryLoaded:!!s.inventoryLoaded,inventoryCount:Number(s.inventoryCount||0)});byNum.delete(s.set_num);}
   for(const s of byNum.values())merged.push(s);
   state.sets=merged;
+  state.assignments=(old.assignments&&typeof old.assignments==='object')?old.assignments:{};
+  state.assignmentHistory=Array.isArray(old.assignmentHistory)?old.assignmentHistory:[];
   if(!safeGet(STATE_KEY))saveState();
  }catch(e){log('Sammlung konnte nicht geladen werden: '+e.message)}
 }
@@ -144,6 +155,40 @@ async function fetchInventory(s){
  await putInventory(s.set_num,all);s.inventoryLoaded=true;s.inventoryCount=all.length;s.error='';return all;
 }
 
+function assignmentKey(setNum,partId,colorId){return `${setNum}|${String(partId||'').toLowerCase()}|${colorId==null?'*':String(colorId)}`;}
+function parseAssignmentKey(key){const [set_num,part_id,color_id]=String(key).split('|');return {set_num,part_id,color_id};}
+function assignmentCount(setNum,partId,colorId){return Number(state.assignments[assignmentKey(setNum,partId,colorId)]||0);}
+function wildcardAssignmentCount(setNum,partId){return Number(state.assignments[assignmentKey(setNum,partId,null)]||0);}
+function effectiveAssigned(setNum,partId,colorId){
+ const exact=assignmentCount(setNum,partId,colorId);
+ const wild=colorId==null?0:wildcardAssignmentCount(setNum,partId);
+ return exact+wild;
+}
+function changeAssignment(setNum,partId,colorId,delta,meta={}){
+ const key=assignmentKey(setNum,partId,colorId);const old=Number(state.assignments[key]||0);const next=Math.max(0,old+delta);
+ if(next===0)delete state.assignments[key];else state.assignments[key]=next;
+ if(delta>0){state.assignmentHistory.push({key,delta:Math.min(delta,next-old),ts:Date.now()});if(state.assignmentHistory.length>100)state.assignmentHistory=state.assignmentHistory.slice(-100);}
+ saveState();renderAssignments();
+ return next;
+}
+function setAssignmentCount(setNum,partId,colorId,count){const key=assignmentKey(setNum,partId,colorId);const n=Math.max(0,Number(count||0));if(n===0)delete state.assignments[key];else state.assignments[key]=n;saveState();renderAssignments();}
+function assignmentMetaFor(key){
+ const {set_num,part_id,color_id}=parseAssignmentKey(key);const set=state.sets.find(s=>s.set_num===set_num);return {set,set_num,part_id,color_id};
+}
+function renderAssignments(){
+ const box=$('#assignmentList');const entries=Object.entries(state.assignments).filter(([,n])=>Number(n)>0);box.innerHTML='';
+ $('#undoLastAssignment').disabled=!state.assignmentHistory.length;
+ if(!entries.length){status($('#assignmentStatus'),'Noch keine Teile zugeordnet.');return;}
+ status($('#assignmentStatus'),`${entries.length} unterschiedliche Teil-/Set-Zuordnungen gespeichert.`,'ok');
+ entries.sort((a,b)=>{const A=assignmentMetaFor(a[0]),B=assignmentMetaFor(b[0]);return (A.set?.name||A.set_num).localeCompare(B.set?.name||B.set_num)||A.part_id.localeCompare(B.part_id);});
+ for(const [key,countRaw] of entries){
+  const count=Number(countRaw);const m=assignmentMetaFor(key);const d=document.createElement('div');d.className='assignmentRow';
+  const setName=m.set?.name||m.set_num;const colorText=m.color_id==='*'?'Farbe nicht festgelegt':'Farb-ID '+m.color_id;
+  d.innerHTML=`<div><strong>${escapeHtml(setName)}</strong><div class="meta">Set ${escapeHtml(m.set_num.replace('-1',''))} · Teil ${escapeHtml(m.part_id)} · ${escapeHtml(colorText)}</div><div class="count">${count}× zugeordnet</div></div><div class="assignCtl"><button class="minus" type="button">−1</button><button type="button">+1</button><button class="danger reset" type="button">Zurücksetzen</button></div>`;
+  const [minus,plus,reset]=d.querySelectorAll('button');minus.addEventListener('click',()=>changeAssignment(m.set_num,m.part_id,m.color_id==='*'?null:m.color_id,-1));plus.addEventListener('click',()=>changeAssignment(m.set_num,m.part_id,m.color_id==='*'?null:m.color_id,1));reset.addEventListener('click',()=>setAssignmentCount(m.set_num,m.part_id,m.color_id==='*'?null:m.color_id,0));box.appendChild(d);
+ }
+}
+
 function render(){
  const list=$('#setList');list.innerHTML='';
  state.sets.forEach(s=>{
@@ -157,6 +202,7 @@ function render(){
  });
  const loaded=state.sets.filter(s=>s.loaded).length,inv=state.sets.filter(s=>s.inventoryLoaded).length,built=state.sets.filter(s=>s.built).length;
  $('#countAll').textContent=state.sets.length;$('#countLoaded').textContent=loaded;$('#countInventory').textContent=inv;$('#countBuilt').textContent=built;$('#countSearch').textContent=state.sets.length-built;
+ renderAssignments();
 }
 
 async function loadOneSet(s){
@@ -199,23 +245,44 @@ async function matchCandidate(candidate,colorCandidate){
  for(const s of state.sets.filter(x=>!x.built&&x.inventoryLoaded)){
   const inv=await getInventory(s.set_num);if(!Array.isArray(inv))continue;let qtyAny=0,qtyColor=0,foundColors=new Set();
   for(const row of inv){const variants=partIdVariants(row.part);if(!variants.has(pid))continue;const qty=Number(row.quantity||0);qtyAny+=qty;const cid=row.color&&row.color.id!=null?String(row.color.id):'';const cname=row.color&&row.color.name||cid;if(cname)foundColors.add(cname);if(colorId&&cid===colorId)qtyColor+=qty;}
-  if(qtyAny>0)out.push({set:s,qtyAny,qtyColor,colors:[...foundColors]});
+  if(qtyAny>0){
+   const targetQty=(colorId&&qtyColor>0)?qtyColor:qtyAny;
+   const assignColor=(colorId&&qtyColor>0)?colorId:null;
+   const assigned=effectiveAssigned(s.set_num,pid,assignColor);
+   const remaining=Math.max(0,targetQty-assigned);
+   if(remaining>0)out.push({set:s,qtyAny,qtyColor,colors:[...foundColors],targetQty,assignColor,assigned,remaining});
+  }
  }
- out.sort((a,b)=>{if(colorId&&a.qtyColor!==b.qtyColor)return b.qtyColor-a.qtyColor;return b.qtyAny-a.qtyAny;});return out;
+ out.sort((a,b)=>{if(a.remaining!==b.remaining)return a.remaining-b.remaining;if(colorId&&a.qtyColor!==b.qtyColor)return b.qtyColor-a.qtyColor;return b.qtyAny-a.qtyAny;});return out;
 }
 function renderCandidates(data){const box=$('#candidates');box.innerHTML='';const items=(data.items||[]).filter(x=>x.type==='part');if(!items.length){box.innerHTML='<div class="status err">Brickognize hat kein Teil mit ausreichender Sicherheit erkannt.</div>';return;}items.forEach((c,i)=>{const d=document.createElement('div');d.className='candidate';d.innerHTML=`<img src="${escapeHtml(c.img_url||'')}" alt=""><div><strong>${escapeHtml(c.name||c.id)}</strong><div class="meta">Teilenummer: ${escapeHtml(c.id)} · Treffer ${(Number(c.score||0)*100).toFixed(1)} %</div><div class="row"><button class="btn ${i===0?'primary':'secondary'} chooseCandidate" type="button">Dieses Teil verwenden</button></div></div>`;d.querySelector('button').addEventListener('click',()=>useCandidate(c,data));box.appendChild(d);});$('#candidateWrap').classList.remove('hidden');}
 async function useCandidate(c,data){const colors=getBrickColors(data);const color=colors[0]||null;status($('#scanStatus'),`⏳ Teil ${c.id} wird mit deinen „Suchen“-Sets verglichen …`,'wait');const matches=await matchCandidate(c,color);lastRecognition={candidate:c,color,matches};renderMatches(c,color,matches);}
-function renderMatches(c,color,matches){const box=$('#matches');box.innerHTML='';const searchSets=state.sets.filter(s=>!s.built);const inventoryMissing=searchSets.filter(s=>!s.inventoryLoaded).length;let head=`Teil ${escapeHtml(c.id)} – ${escapeHtml(c.name||'')}`;if(color)head+=` · Farbe: ${escapeHtml(color.name||color.id)} (${(Number(color.score||0)*100).toFixed(0)} %) `;if(inventoryMissing)head+=` · ${inventoryMissing} Such-Set(s) ohne Inventar`;
- if(!matches.length){box.innerHTML=`<div class="status wait"><b>${head}</b><br>Kein Treffer in den aktuell geladenen „Suchen“-Sets.</div>`;status($('#scanStatus'),'Kein passendes Such-Set gefunden.','wait');$('#matchWrap').classList.remove('hidden');return;}
- const info=document.createElement('div');info.className='status ok';info.innerHTML=`<b>${head}</b><br>${matches.length} passende Set(s) gefunden. ${color?'Wenn die Farberkennung stimmt, werden exakte Farbtreffer bevorzugt.':'Farbe wurde nicht zuverlässig geliefert; Abgleich erfolgt nach Teilenummer.'}`;box.appendChild(info);
- matches.forEach(m=>{const s=m.set;const d=document.createElement('div');d.className='match';const visual=s.set_img_url?`<img src="${escapeHtml(s.set_img_url)}" alt="">`:`<div class="ph">${escapeHtml(s.set_num.replace('-1',''))}</div>`;const qtyText=color&&m.qtyColor>0?`${m.qtyColor}× in erkannter Farbe · ${m.qtyAny}× Teil gesamt`:`${m.qtyAny}× Teil im Set`;d.innerHTML=`${visual}<div><strong>${escapeHtml(s.name||s.set_num)}</strong><div class="meta">Set ${escapeHtml(s.set_num.replace('-1',''))} · ${escapeHtml(s.category||'')}</div><div class="qty">${qtyText}</div><div class="meta">Farben dieses Teils im Set: ${escapeHtml(m.colors.join(', ')||'unbekannt')}</div></div>`;box.appendChild(d);});status($('#scanStatus'),`✅ ${matches.length} passende Set(s) gefunden.`,'ok');$('#matchWrap').classList.remove('hidden');}
+function renderMatches(c,color,matches){
+ const box=$('#matches');box.innerHTML='';const searchSets=state.sets.filter(s=>!s.built);const inventoryMissing=searchSets.filter(s=>!s.inventoryLoaded).length;let head=`Teil ${escapeHtml(c.id)} – ${escapeHtml(c.name||'')}`;if(color)head+=` · Farbe: ${escapeHtml(color.name||color.id)} (${(Number(color.score||0)*100).toFixed(0)} %) `;if(inventoryMissing)head+=` · ${inventoryMissing} Such-Set(s) ohne Inventar`;
+ if(!matches.length){box.innerHTML=`<div class="status wait"><b>${head}</b><br>Kein offener Treffer in den aktuell geladenen „Suchen“-Sets. Bereits vollständig zugeordnete Treffer werden ausgeblendet.</div>`;status($('#scanStatus'),'Kein offener Treffer gefunden. Bereits vollständig zugeordnete Sets werden nicht mehr vorgeschlagen.','wait');$('#matchWrap').classList.remove('hidden');return;}
+ const info=document.createElement('div');info.className='status ok';info.innerHTML=`<b>${head}</b><br>${matches.length} Set(s) mit noch fehlenden Exemplaren gefunden. Mit „✓ 1 zuordnen“ hakst du genau ein Exemplar ab.`;box.appendChild(info);
+ matches.forEach(m=>{
+  const s=m.set;const d=document.createElement('div');d.className='match';const visual=s.set_img_url?`<img src="${escapeHtml(s.set_img_url)}" alt="">`:`<div class="ph">${escapeHtml(s.set_num.replace('-1',''))}</div>`;
+  const qtyText=color&&m.qtyColor>0?`${m.qtyColor}× in erkannter Farbe · ${m.qtyAny}× Teil gesamt`:`${m.qtyAny}× Teil im Set`;
+  d.innerHTML=`${visual}<div><strong>${escapeHtml(s.name||s.set_num)}</strong><div class="meta">Set ${escapeHtml(s.set_num.replace('-1',''))} · ${escapeHtml(s.category||'')}</div><div class="qty">Noch ${m.remaining} von ${m.targetQty} offen</div><div class="meta">${qtyText} · bereits ${m.assigned}× zugeordnet</div><div class="meta">Farben dieses Teils im Set: ${escapeHtml(m.colors.join(', ')||'unbekannt')}</div><div class="assignCtl"><button class="done assignOne" type="button">✓ 1 zuordnen</button><button class="minus unassignOne" type="button" ${m.assigned<=0?'disabled':''}>−1 korrigieren</button></div></div>`;
+  d.querySelector('.assignOne').addEventListener('click',async()=>{changeAssignment(s.set_num,String(c.id).toLowerCase(),m.assignColor,1,{setName:s.name});status($('#scanStatus'),`✅ 1× Teil ${c.id} wurde ${s.name||s.set_num} zugeordnet.`,'ok');const refreshed=await matchCandidate(c,color);lastRecognition={candidate:c,color,matches:refreshed};renderMatches(c,color,refreshed);});
+  d.querySelector('.unassignOne').addEventListener('click',async()=>{changeAssignment(s.set_num,String(c.id).toLowerCase(),m.assignColor,-1);const refreshed=await matchCandidate(c,color);lastRecognition={candidate:c,color,matches:refreshed};renderMatches(c,color,refreshed);});
+  box.appendChild(d);
+ });status($('#scanStatus'),`✅ ${matches.length} Set(s) mit offenen Treffern gefunden.`,'ok');$('#matchWrap').classList.remove('hidden');
+}
 
 $('#scanPart').addEventListener('click',async()=>{if(!selectedFile){status($('#scanStatus'),'Bitte zuerst ein Foto aufnehmen oder auswählen.','err');return;}$('#scanPart').disabled=true;status($('#scanStatus'),'⏳ Brickognize analysiert das Foto …','wait');$('#candidateWrap').classList.add('hidden');$('#matchWrap').classList.add('hidden');try{const d=await brickognize(selectedFile);lastRecognition=d;log('Brickognize erfolgreich: '+(d.items||[]).length+' Kandidaten');renderCandidates(d);const top=(d.items||[]).find(x=>x.type==='part');if(top)await useCandidate(top,d);else status($('#scanStatus'),'Brickognize hat kein Teil erkannt.','wait');}catch(e){status($('#scanStatus'),'❌ Brickognize fehlgeschlagen: '+e.message,'err');log('Brickognize FEHLER: '+e.stack);}finally{$('#scanPart').disabled=false;}});
+
+$('#undoLastAssignment').addEventListener('click',()=>{
+ while(state.assignmentHistory.length){const h=state.assignmentHistory.pop();const current=Number(state.assignments[h.key]||0);if(current>0){const m=assignmentMetaFor(h.key);const next=Math.max(0,current-1);if(next===0)delete state.assignments[h.key];else state.assignments[h.key]=next;saveState();renderAssignments();status($('#assignmentStatus'),`↶ Letzte Zuordnung rückgängig: Teil ${m.part_id}, Set ${m.set_num.replace('-1','')}.`,'ok');return;}}
+ renderAssignments();
+});
+$('#clearAssignments').addEventListener('click',()=>{if(!Object.keys(state.assignments).length)return;if(!confirm('Wirklich ALLE bisherigen Teile-Zuordnungen löschen? Die Sets und Inventare bleiben erhalten.'))return;state.assignments={};state.assignmentHistory=[];saveState();renderAssignments();status($('#assignmentStatus'),'Alle Teile-Zuordnungen wurden gelöscht.','ok');});
 
 $('#runDiag').addEventListener('click',async()=>{log('--- Diagnose gestartet ---');log('URL: '+location.href);log('Protokoll: '+location.protocol);log('Online: '+navigator.onLine);log('User-Agent: '+navigator.userAgent);const test='ok-'+Date.now();const ls=safeSet('legoSorterDiag',test)&&safeGet('legoSorterDiag')===test;log('LocalStorage: '+(ls?'OK':'FEHLER'));log('IndexedDB: '+(typeof indexedDB!=='undefined'?'OK':'FEHLER'));try{const db=await openDB();db.close();log('IndexedDB öffnen: OK');}catch(e){log('IndexedDB öffnen: FEHLER '+e.message)}log('Fetch API: '+(typeof fetch==='function'?'OK':'FEHLER'));log('JavaScript: OK');});
 $('#testBrickognize').addEventListener('click',async()=>{status($('#scanStatus'),'⏳ Brickognize Health-Check …','wait');try{const r=await fetch('https://api.brickognize.com/health/',{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();status($('#scanStatus'),'✅ Brickognize ist erreichbar.','ok');log('Brickognize Health: '+JSON.stringify(d));}catch(e){status($('#scanStatus'),'❌ Brickognize nicht erreichbar: '+e.message,'err');log('Brickognize Health FEHLER: '+e.stack);}});
 
-loadState();rbKey=safeGet(RB_KEY);$('#rbKey').value=rbKey;render();log('JavaScript erfolgreich gestartet.');log('v0.5-Datenmigration: '+(safeGet(OLD_STATE_KEY)?'Quelle vorhanden':'keine Alt-Daten'));log('Rebrickable-Key vorhanden: '+(rbKey?'JA':'NEIN'));if(rbKey)status($('#keyStatus'),'✅ Gespeicherter API-Key gefunden.','ok');
+loadState();rbKey=safeGet(RB_KEY);$('#rbKey').value=rbKey;render();log('JavaScript erfolgreich gestartet.');log('v0.6.2 Datenmigration: '+(safeGet(OLD_STATE_KEY)?'Quelle vorhanden':'keine Alt-Daten'));log('Rebrickable-Key vorhanden: '+(rbKey?'JA':'NEIN'));if(rbKey)status($('#keyStatus'),'✅ Gespeicherter API-Key gefunden.','ok');
 })();
 </script>
 </main>
