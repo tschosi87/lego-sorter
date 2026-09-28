@@ -4,92 +4,74 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#eef6ff">
-<title>LEGO Sorter v0.6.2</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BrickSort">
+<meta name="theme-color" content="#0b1220">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>BrickSort v0.7</title>
 <style>
-:root{--bg:#eef6ff;--card:#fff;--text:#142235;--muted:#617083;--blue:#1267d8;--green:#197a4f;--red:#a12b2b;--orange:#8a5d00;--line:#d8e5f1;--shadow:0 12px 32px rgba(26,66,106,.12)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:linear-gradient(180deg,#e8f3ff,#f9fbfe);color:var(--text)}
-main{max-width:1050px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(70px + env(safe-area-inset-bottom))}
-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}.logo{width:52px;height:52px;border-radius:16px;background:#121212;color:#fff;display:grid;place-items:center;font-size:28px}.title h1{margin:0;font-size:27px}.title p{margin:2px 0 0;color:var(--muted);font-size:14px}
-.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px;margin-bottom:16px}.card h2{margin:0 0 8px;font-size:20px}.muted{color:var(--muted);font-size:13px;line-height:1.45}.small{font-size:12px;color:var(--muted)}
-.status{margin-top:12px;border-radius:14px;padding:12px 14px;background:#eef4fb;border:1px solid var(--line);font-size:14px;line-height:1.4}.status.ok{background:#eaf8f1;color:var(--green);border-color:#bee3cf}.status.err{background:#fff0f0;color:var(--red);border-color:#efc5c5}.status.wait{background:#fff7e7;color:var(--orange);border-color:#ead6aa}
-label{display:block;font-weight:700;font-size:13px;margin:14px 0 6px}textarea,input,select{width:100%;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:14px;padding:13px;background:#fbfdff;color:var(--text);-webkit-user-select:text;user-select:text}textarea{min-height:86px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-.row{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.row>*{min-width:0}.btn{appearance:none;border:0;border-radius:14px;padding:12px 15px;font-weight:800;font-size:15px;cursor:pointer;touch-action:manipulation}.btn:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--blue);color:#fff}.secondary{background:#edf4fb;color:#16324f}.danger{background:#fff0f0;color:var(--red)}.success{background:#e9f7ef;color:var(--green)}
-.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}.kpi{background:#fbfdff;border:1px solid var(--line);border-radius:16px;padding:12px}.kpi b{display:block;font-size:23px}.kpi span{font-size:12px;color:var(--muted)}@media(max-width:780px){.kpis{grid-template-columns:repeat(2,1fr)}}
-.progress{height:12px;background:#e8eef5;border-radius:999px;overflow:hidden;margin-top:12px}.progress div{height:100%;width:0;background:linear-gradient(90deg,#1267d8,#1d9c62);transition:width .25s}
-.sets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}@media(max-width:760px){.sets{grid-template-columns:1fr}}.set{display:grid;grid-template-columns:72px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:16px;padding:10px;background:#fff}.set.built{opacity:.58;background:#f4f7f5}.set img{width:72px;height:56px;object-fit:contain;background:#f2f5f8;border-radius:9px}.ph{width:72px;height:56px;border-radius:9px;background:#edf3f8;display:grid;place-items:center;font-weight:900;color:#6d8194}.name{font-weight:800;font-size:14px}.meta{font-size:12px;color:var(--muted);margin-top:3px}.setActions{display:flex;flex-direction:column;gap:6px;align-items:stretch}.toggle,.mini{border:1px solid var(--line);border-radius:11px;padding:8px 9px;font-weight:800;background:#eef7ff;color:#155eaa;white-space:nowrap}.toggle.on{background:#eaf8f1;color:var(--green)}.mini{font-size:12px;background:#fff}.mini.del{color:var(--red);background:#fff7f7}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.grid2{grid-template-columns:1fr}}
-.scanBox{border:2px dashed #bfd3e6;border-radius:18px;padding:14px;text-align:center;background:#f8fbff}.fileInput{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;clip-path:inset(50%)!important}.fileLabel{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:14px;padding:14px 18px;font-weight:800;font-size:17px;cursor:pointer;touch-action:manipulation;background:var(--blue);color:#fff;margin:0}.fileLabel.secondary{background:#edf4fb;color:#16324f}.preview{width:100%;max-height:340px;object-fit:contain;border-radius:14px;background:#eef3f7;margin-top:12px}.hidden{display:none!important}
-.results{display:grid;gap:10px;margin-top:12px}.candidate{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;display:grid;grid-template-columns:70px 1fr;gap:12px;align-items:center}.candidate img{width:70px;height:70px;object-fit:contain;background:#f3f6f9;border-radius:10px}.candidate .score{font-weight:900;color:var(--green)}
-.match{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:center}.match img{width:76px;height:58px;object-fit:contain;background:#f2f5f8;border-radius:10px}.match strong{display:block}.match .qty{font-weight:900;font-size:17px;color:var(--blue)}
-.assignCtl{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.assignCtl button{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-weight:800;background:#f5f9fd;color:#173b5c}.assignCtl .done{background:#e9f7ef;color:var(--green)}.assignCtl .minus{background:#fff7f0;color:#8a5d00}.assignmentRow{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fff;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.assignmentRow .count{font-weight:900;color:var(--blue)}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tabs a{text-decoration:none;border:1px solid var(--line);background:#fff;color:#193753;border-radius:999px;padding:9px 12px;font-weight:800;font-size:13px}
-.debug{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;word-break:break-word;background:#101923;color:#d9e8f6;border-radius:14px;padding:12px;max-height:220px;overflow:auto;margin-top:12px}
+:root{--bg:#f4f6f8;--card:#fff;--text:#111827;--muted:#667085;--primary:#2563eb;--primary2:#1d4ed8;--green:#16865c;--red:#b42318;--amber:#9a6700;--line:#e4e7ec;--soft:#f8fafc;--shadow:0 12px 30px rgba(16,24,40,.08)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--bg)}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent}
+button,input,textarea,select{font:inherit}button{touch-action:manipulation}.app{max-width:980px;margin:0 auto;min-height:100vh;padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+.topbar{position:sticky;top:0;z-index:30;background:rgba(244,246,248,.92);backdrop-filter:blur(18px);padding:calc(10px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid rgba(228,231,236,.8)}.brand{display:flex;align-items:center;gap:12px;max-width:980px;margin:auto}.appIcon{width:44px;height:44px;border-radius:13px;background:#0b1220;color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:0 8px 20px rgba(15,23,42,.2)}.brand h1{font-size:20px;margin:0;letter-spacing:-.3px}.brand p{font-size:12px;color:var(--muted);margin:2px 0 0}
+.view{display:none;padding:18px 16px 8px}.view.active{display:block}.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;border-radius:28px;padding:24px;box-shadow:0 18px 44px rgba(30,58,138,.22);margin-bottom:16px}.hero h2{font-size:29px;margin:0 0 8px;letter-spacing:-.7px}.hero p{margin:0 0 18px;color:#dbeafe;line-height:1.45}.hero .btn{background:#fff;color:#0f172a}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}.card h2{font-size:20px;margin:0 0 7px}.card h3{font-size:16px;margin:18px 0 8px}.muted,.small{color:var(--muted);font-size:13px;line-height:1.45}.small{font-size:12px}
+.quickGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}.quick{border:1px solid var(--line);background:#fff;border-radius:20px;padding:16px;text-align:left;box-shadow:0 6px 18px rgba(16,24,40,.05)}.quick .emoji{font-size:28px;display:block;margin-bottom:14px}.quick strong{font-size:16px;display:block}.quick span{font-size:12px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}.kpi{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:12px}.kpi b{display:block;font-size:23px}.kpi span{font-size:12px;color:var(--muted)}@media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.homeStats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.homeStat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px}.homeStat b{font-size:24px;display:block}.homeStat span{font-size:12px;color:var(--muted)}@media(max-width:680px){.homeStats{grid-template-columns:repeat(2,1fr)}}
+.btn{appearance:none;border:0;border-radius:14px;padding:13px 16px;font-weight:800;font-size:15px;cursor:pointer}.btn:disabled{opacity:.42}.primary{background:var(--primary);color:#fff}.secondary{background:#eef2f6;color:#1f2937}.danger{background:#fef3f2;color:var(--red)}.success{background:#ecfdf3;color:var(--green)}.row{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.row>*{min-width:0}
+label{display:block;font-weight:700;font-size:13px;margin:14px 0 6px}textarea,input,select{width:100%;font-size:16px;border:1px solid #d0d5dd;border-radius:14px;padding:13px;background:#fff;color:var(--text);-webkit-user-select:text;user-select:text}textarea{min-height:86px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.status{margin-top:12px;border-radius:14px;padding:12px 14px;background:#f2f4f7;border:1px solid var(--line);font-size:14px;line-height:1.4}.status.ok{background:#ecfdf3;color:#067647;border-color:#abefc6}.status.err{background:#fef3f2;color:#b42318;border-color:#fecdca}.status.wait{background:#fffaeb;color:#93370d;border-color:#fedf89}
+.progress{height:10px;background:#eaecf0;border-radius:999px;overflow:hidden;margin-top:12px}.progress div{height:100%;width:0;background:linear-gradient(90deg,#2563eb,#16a34a);transition:width .25s}.homeProgress{height:9px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden;margin-top:12px}.homeProgress div{height:100%;background:#86efac;width:0}
+.sets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}@media(max-width:760px){.sets{grid-template-columns:1fr}}.set{display:grid;grid-template-columns:82px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:18px;padding:10px;background:#fff}.set.built{opacity:.62;background:#f8fafc}.set img{width:82px;height:64px;object-fit:contain;background:#f8fafc;border-radius:10px}.ph{width:82px;height:64px;border-radius:10px;background:#eef2f6;display:grid;place-items:center;font-weight:900;color:#667085}.name{font-weight:800;font-size:14px}.meta{font-size:12px;color:var(--muted);margin-top:3px}.setActions{display:flex;flex-direction:column;gap:6px}.toggle,.mini{border:1px solid var(--line);border-radius:11px;padding:8px 9px;font-weight:800;background:#eff8ff;color:#175cd3;white-space:nowrap}.toggle.on{background:#ecfdf3;color:#067647}.mini{font-size:12px;background:#fff}.mini.del{color:var(--red);background:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.grid2{grid-template-columns:1fr}}.scanBox{border:1px solid #d0d5dd;border-radius:22px;padding:16px;text-align:center;background:#fff}.fileInput{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;clip-path:inset(50%)!important}.fileLabel{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:15px;padding:15px 18px;font-weight:800;font-size:17px;cursor:pointer;background:var(--primary);color:#fff;margin:0}.fileLabel.secondary{background:#eef2f6;color:#1f2937}.preview{width:100%;max-height:420px;object-fit:contain;border-radius:16px;background:#f2f4f7;margin-top:12px}.hidden{display:none!important}
+.results{display:grid;gap:10px;margin-top:12px}.candidate,.match,.assignmentRow{border:1px solid var(--line);border-radius:18px;padding:12px;background:#fff}.candidate{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:center}.candidate img{width:76px;height:76px;object-fit:contain;background:#f8fafc;border-radius:10px}.candidate .score{font-weight:900;color:var(--green)}.match{display:grid;grid-template-columns:86px 1fr;gap:12px;align-items:center}.match img{width:86px;height:66px;object-fit:contain;background:#f8fafc;border-radius:10px}.match .qty{font-weight:900;font-size:17px;color:var(--primary)}.assignCtl{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.assignCtl button{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-weight:800;background:#f8fafc;color:#344054}.assignCtl .done{background:#ecfdf3;color:#067647}.assignCtl .minus{background:#fffaeb;color:#93370d}.assignmentRow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.assignmentRow .count{font-weight:900;color:var(--primary)}
+.debug{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;word-break:break-word;background:#101828;color:#d0d5dd;border-radius:14px;padding:12px;max-height:220px;overflow:auto;margin-top:12px}
+.bottomNav{position:fixed;z-index:50;left:50%;bottom:0;transform:translateX(-50%);width:min(980px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-top:1px solid var(--line);padding:7px 8px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -8px 28px rgba(16,24,40,.08)}.bottomNav button{border:0;background:transparent;border-radius:12px;color:#667085;padding:7px 4px;font-size:11px;font-weight:750}.bottomNav button span{display:block;font-size:21px;line-height:1.1;margin-bottom:3px}.bottomNav button.active{color:var(--primary);background:#eff6ff}
+.sectionHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}.sectionHead h2{font-size:25px;margin:0;letter-spacing:-.4px}.pill{display:inline-flex;border-radius:999px;background:#eef2f6;color:#475467;padding:7px 10px;font-size:12px;font-weight:800}
+@media(min-width:800px){.view{padding-top:24px}.hero{padding:32px}}
 </style>
 </head>
 <body>
+<div class="app">
+<header class="topbar"><div class="brand"><div class="appIcon">🧱</div><div><h1>BrickSort</h1><p>LEGO-Teile schneller den richtigen Sets zuordnen</p></div></div></header>
+
 <main>
-<header><div class="logo">🧱</div><div class="title"><h1>LEGO Sorter v0.6.2</h1><p>Rebrickable-Inventare · Brickognize · iPad-Kamera</p></div></header>
-<nav class="tabs"><a href="#scan">📷 Teil scannen</a><a href="#assignments">✅ Zuordnungen</a><a href="#sets">🧰 Sets</a><a href="#api">🔑 Rebrickable</a><a href="#diag">🛠 Diagnose</a></nav>
+<section class="view active" data-view="home">
+ <div class="hero"><h2>Bereit zum Sortieren?</h2><p>Teil fotografieren, erkennen und direkt einem deiner offenen Sets zuordnen.</p><button class="btn" data-open-view="scan">📷 Teil scannen</button><div class="homeProgress"><div id="homeProgressBar"></div></div><div id="homeProgressText" class="small" style="color:#dbeafe;margin-top:7px">0 % der Sets als gebaut markiert</div></div>
+ <div class="homeStats"><div class="homeStat"><b id="homeSetCount">0</b><span>Sets</span></div><div class="homeStat"><b id="homeSearchCount">0</b><span>in Suche</span></div><div class="homeStat"><b id="homeBuiltCount">0</b><span>gebaut</span></div><div class="homeStat"><b id="homeAssignedCount">0</b><span>Teile zugeordnet</span></div></div>
+ <div class="quickGrid" style="margin-top:14px"><button class="quick" data-open-view="scan"><span class="emoji">📷</span><strong>Teil scannen</strong><span>Foto aufnehmen und zuordnen</span></button><button class="quick" data-open-view="sets"><span class="emoji">🧰</span><strong>Meine Sets</strong><span>Sets hinzufügen und Status ändern</span></button><button class="quick" data-open-view="assignments"><span class="emoji">✅</span><strong>Zuordnungen</strong><span>Abgehakte Teile korrigieren</span></button><button class="quick" data-open-view="settings"><span class="emoji">⚙️</span><strong>Einstellungen</strong><span>API, Backup und Diagnose</span></button></div>
+ <div class="card"><h2>Datenstatus</h2><div class="row"><span class="pill"><span id="homeInventoryCount">0</span>&nbsp; Inventare geladen</span></div><p class="muted">Deine bisherigen Daten aus v0.6.2 werden automatisch weiterverwendet.</p></div>
+</section>
 
-<section class="card" id="scan">
-<h2>1. Teil scannen</h2>
-<p class="muted">Fotografiere ein einzelnes LEGO-Teil möglichst groß, scharf und auf ruhigem Hintergrund. Brickognize erkennt das Teil; danach wird nur in deinen Sets mit Status <b>„Suchen“</b> abgeglichen.</p>
-<div class="scanBox">
-<div class="row" style="justify-content:center">
-<label class="fileLabel" for="cameraPhoto">📷 Foto aufnehmen</label>
-<label class="fileLabel secondary" for="libraryPhoto">🖼 Aus Fotos auswählen</label>
+<section class="view" data-view="scan">
+ <div class="sectionHead"><div><h2>Teil scannen</h2><div class="muted">Ein Teil pro Foto liefert die zuverlässigsten Treffer.</div></div><span class="pill">Brickognize</span></div>
+ <div class="card" id="scan">
+  <div class="scanBox"><div class="row" style="justify-content:center"><label class="fileLabel" for="cameraPhoto">📷 Foto aufnehmen</label><label class="fileLabel secondary" for="libraryPhoto">🖼 Aus Fotos</label></div><input class="fileInput" id="cameraPhoto" type="file" accept="image/*" capture="environment"><input class="fileInput" id="libraryPhoto" type="file" accept="image/*"><img id="photoPreview" class="preview hidden" alt="Vorschau"><div class="row" style="justify-content:center"><button class="btn primary" id="scanPart" type="button" disabled>🔎 Teil erkennen</button><button class="btn secondary" id="clearPhoto" type="button" disabled>🗑 Foto löschen</button><button class="btn success" id="nextPart" type="button">＋ Nächstes Teil</button></div></div>
+  <div id="scanStatus" class="status">Noch kein Foto aufgenommen.</div><div id="candidateWrap" class="hidden"><h3>Erkannte Teile</h3><div id="candidates" class="results"></div></div><div id="matchWrap" class="hidden"><h3>Passende offene Sets</h3><div id="matches" class="results"></div></div>
+ </div>
+</section>
+
+<section class="view" data-view="sets">
+ <div class="sectionHead"><div><h2>Meine Sets</h2><div class="muted">Neue Sets ergänzen, Inventare laden und fertige Sets aus der Suche nehmen.</div></div></div>
+ <div class="card" id="sets"><div class="kpis"><div class="kpi"><b id="countAll">0</b><span>Sets gesamt</span></div><div class="kpi"><b id="countLoaded">0</b><span>Setdaten</span></div><div class="kpi"><b id="countInventory">0</b><span>Inventare</span></div><div class="kpi"><b id="countBuilt">0</b><span>gebaut</span></div><div class="kpi"><b id="countSearch">0</b><span>in Suche</span></div></div><div class="grid2"><div><label for="newSetNum">Setnummer</label><input id="newSetNum" inputmode="numeric" autocapitalize="none" autocomplete="off" placeholder="z. B. 42177"></div><div><label for="newSetCategory">Kategorie (optional)</label><input id="newSetCategory" autocomplete="off" placeholder="z. B. Technic"></div></div><div class="row"><button class="btn primary" id="addSet" type="button">＋ Set hinzufügen</button><button class="btn secondary" id="loadAllInventories" type="button">⬇️ Fehlende Inventare laden</button><button class="btn secondary" id="stopLoad" type="button" disabled>Stoppen</button></div><div class="progress"><div id="progressBar"></div></div><div id="setStatus" class="status">Sammlung bereit.</div><div id="setList" class="sets"></div></div>
+</section>
+
+<section class="view" data-view="assignments">
+ <div class="sectionHead"><div><h2>Zuordnungen</h2><div class="muted">Bereits einsortierte Teile prüfen und korrigieren.</div></div></div>
+ <div class="card" id="assignments"><div class="row"><button class="btn secondary" id="undoLastAssignment" type="button" disabled>↶ Letzte rückgängig</button><button class="btn danger" id="clearAssignments" type="button">Alle löschen</button></div><div id="assignmentStatus" class="status">Noch keine Teile zugeordnet.</div><div id="assignmentList" class="results"></div></div>
+</section>
+
+<section class="view" data-view="settings">
+ <div class="sectionHead"><div><h2>Einstellungen</h2><div class="muted">Verbindung, Datensicherung und technische Diagnose.</div></div></div>
+ <div class="card" id="api"><h2>Rebrickable</h2><p class="muted">Der Key bleibt lokal auf diesem Gerät gespeichert.</p><label for="rbKey">API-Key</label><textarea id="rbKey" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="API-Key hier einfügen"></textarea><div class="row"><button class="btn primary" id="saveKey" type="button">Key speichern</button><button class="btn secondary" id="testKey" type="button">Verbindung testen</button><button class="btn danger" id="clearKey" type="button">Key löschen</button></div><div id="keyStatus" class="status">Bereit.</div></div>
+ <div class="card"><h2>Backup</h2><p class="muted">Sichert Sets, Inventare und Zuordnungen in einer Datei. Sinnvoll vor größeren Änderungen oder Gerätewechsel.</p><div class="row"><button class="btn primary" id="exportBackup" type="button">⬇️ Backup exportieren</button><button class="btn secondary" id="importBackupBtn" type="button">⬆️ Backup importieren</button></div><input class="fileInput" id="importBackup" type="file" accept="application/json,.json"><div id="backupStatus" class="status">Noch kein Backup erstellt.</div></div>
+ <div class="card" id="diag"><h2>Diagnose</h2><div class="row"><button class="btn secondary" id="runDiag" type="button">Diagnose ausführen</button><button class="btn secondary" id="testBrickognize" type="button">Brickognize erreichbar?</button></div><div id="diagBox" class="debug">App startet …</div></div>
+</section>
+</main>
 </div>
-<input class="fileInput" id="cameraPhoto" type="file" accept="image/*" capture="environment">
-<input class="fileInput" id="libraryPhoto" type="file" accept="image/*">
-<img id="photoPreview" class="preview hidden" alt="Vorschau des ausgewählten LEGO-Teils">
-<div class="row" style="justify-content:center"><button class="btn primary" id="scanPart" type="button" disabled>🔎 Teil erkennen</button><button class="btn secondary" id="clearPhoto" type="button" disabled>🗑 Foto löschen</button></div>
-<div class="small" style="margin-top:10px">Tipp: Ein einzelnes Teil möglichst groß und scharf auf einen ruhigen, kontrastreichen Hintergrund legen.</div>
-</div>
-<div id="scanStatus" class="status">Noch kein Foto aufgenommen. Tippe auf „📷 Foto aufnehmen“.</div>
-<div id="candidateWrap" class="hidden"><h3>Erkannte Teile</h3><div id="candidates" class="results"></div></div>
-<div id="matchWrap" class="hidden"><h3>Passende Sets aus deiner Sammlung</h3><div id="matches" class="results"></div></div>
-</section>
-
-<section class="card" id="assignments">
-<h2>2. Bereits zugeordnete Teile</h2>
-<p class="muted">Hier siehst du alles, was du beim Sortieren bereits einem Set zugeordnet hast. Vollständig zugeordnete Teile werden beim Scannen für dieses Set nicht mehr vorgeschlagen. Fehler kannst du hier jederzeit mit −1, +1 oder „Zurücksetzen“ korrigieren.</p>
-<div class="row"><button class="btn secondary" id="undoLastAssignment" type="button" disabled>↶ Letzte Zuordnung rückgängig</button><button class="btn secondary" id="clearAssignments" type="button">Alle Zuordnungen löschen</button></div>
-<div id="assignmentStatus" class="status">Noch keine Teile zugeordnet.</div>
-<div id="assignmentList" class="results"></div>
-</section>
-
-<section class="card" id="sets">
-<h2>3. Deine Sets verwalten</h2>
-<p class="muted">Neue Sets kannst du jederzeit hinzufügen. Nach dem Hinzufügen werden Setdaten und Inventar direkt von Rebrickable geladen. „Gebaut“ nimmt das Set aus der Teilesuche heraus.</p>
-<div class="kpis"><div class="kpi"><b id="countAll">0</b><span>Sets gesamt</span></div><div class="kpi"><b id="countLoaded">0</b><span>Setdaten</span></div><div class="kpi"><b id="countInventory">0</b><span>Inventare</span></div><div class="kpi"><b id="countBuilt">0</b><span>gebaut</span></div><div class="kpi"><b id="countSearch">0</b><span>in Suche</span></div></div>
-<div class="grid2">
-<div><label for="newSetNum">Setnummer</label><input id="newSetNum" inputmode="numeric" autocapitalize="none" autocomplete="off" placeholder="z. B. 42177"></div>
-<div><label for="newSetCategory">Kategorie (optional)</label><input id="newSetCategory" autocomplete="off" placeholder="z. B. Technic"></div>
-</div>
-<div class="row"><button class="btn primary" id="addSet" type="button">＋ Set hinzufügen</button><button class="btn secondary" id="loadAllInventories" type="button">⬇️ Alle fehlenden Inventare laden</button><button class="btn secondary" id="stopLoad" type="button" disabled>Stoppen</button></div>
-<div class="progress"><div id="progressBar"></div></div>
-<div id="setStatus" class="status">Sammlung bereit.</div>
-<div id="setList" class="sets"></div>
-</section>
-
-<section class="card" id="api">
-<h2>4. Rebrickable</h2>
-<p class="muted">Dein vorhandener API-Key aus v0.5 wird automatisch übernommen. Er bleibt ausschließlich im lokalen Browser-Speicher dieser GitHub-Pages-Adresse.</p>
-<label for="rbKey">Rebrickable API-Key</label>
-<textarea id="rbKey" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="API-Key hier einfügen"></textarea>
-<div class="row"><button class="btn primary" id="saveKey" type="button">Key lokal speichern</button><button class="btn secondary" id="testKey" type="button">Verbindung testen</button><button class="btn danger" id="clearKey" type="button">Key löschen</button></div>
-<div id="keyStatus" class="status">Bereit.</div>
-</section>
-
-<section class="card" id="diag">
-<h2>Diagnose</h2>
-<p class="muted">Zeigt technische Details, falls eine API oder der lokale Speicher nicht funktioniert.</p>
-<div class="row"><button class="btn secondary" id="runDiag" type="button">Diagnose ausführen</button><button class="btn secondary" id="testBrickognize" type="button">Brickognize erreichbar?</button></div>
-<div id="diagBox" class="debug">App startet …</div>
-</section>
-
+<nav class="bottomNav" aria-label="Navigation"><button data-target="home"><span>⌂</span>Start</button><button data-target="scan"><span>📷</span>Scannen</button><button data-target="sets"><span>🧰</span>Sets</button><button data-target="assignments"><span>✅</span>Teile</button><button data-target="settings"><span>⚙️</span>Mehr</button></nav>
 <script>
 'use strict';
 (function(){
@@ -186,7 +168,7 @@ function renderAssignments(){
   const setName=m.set?.name||m.set_num;const colorText=m.color_id==='*'?'Farbe nicht festgelegt':'Farb-ID '+m.color_id;
   d.innerHTML=`<div><strong>${escapeHtml(setName)}</strong><div class="meta">Set ${escapeHtml(m.set_num.replace('-1',''))} · Teil ${escapeHtml(m.part_id)} · ${escapeHtml(colorText)}</div><div class="count">${count}× zugeordnet</div></div><div class="assignCtl"><button class="minus" type="button">−1</button><button type="button">+1</button><button class="danger reset" type="button">Zurücksetzen</button></div>`;
   const [minus,plus,reset]=d.querySelectorAll('button');minus.addEventListener('click',()=>changeAssignment(m.set_num,m.part_id,m.color_id==='*'?null:m.color_id,-1));plus.addEventListener('click',()=>changeAssignment(m.set_num,m.part_id,m.color_id==='*'?null:m.color_id,1));reset.addEventListener('click',()=>setAssignmentCount(m.set_num,m.part_id,m.color_id==='*'?null:m.color_id,0));box.appendChild(d);
- }
+ } updateDashboard();
 }
 
 function render(){
@@ -203,6 +185,7 @@ function render(){
  const loaded=state.sets.filter(s=>s.loaded).length,inv=state.sets.filter(s=>s.inventoryLoaded).length,built=state.sets.filter(s=>s.built).length;
  $('#countAll').textContent=state.sets.length;$('#countLoaded').textContent=loaded;$('#countInventory').textContent=inv;$('#countBuilt').textContent=built;$('#countSearch').textContent=state.sets.length-built;
  renderAssignments();
+ updateDashboard();
 }
 
 async function loadOneSet(s){
@@ -282,9 +265,34 @@ $('#clearAssignments').addEventListener('click',()=>{if(!Object.keys(state.assig
 $('#runDiag').addEventListener('click',async()=>{log('--- Diagnose gestartet ---');log('URL: '+location.href);log('Protokoll: '+location.protocol);log('Online: '+navigator.onLine);log('User-Agent: '+navigator.userAgent);const test='ok-'+Date.now();const ls=safeSet('legoSorterDiag',test)&&safeGet('legoSorterDiag')===test;log('LocalStorage: '+(ls?'OK':'FEHLER'));log('IndexedDB: '+(typeof indexedDB!=='undefined'?'OK':'FEHLER'));try{const db=await openDB();db.close();log('IndexedDB öffnen: OK');}catch(e){log('IndexedDB öffnen: FEHLER '+e.message)}log('Fetch API: '+(typeof fetch==='function'?'OK':'FEHLER'));log('JavaScript: OK');});
 $('#testBrickognize').addEventListener('click',async()=>{status($('#scanStatus'),'⏳ Brickognize Health-Check …','wait');try{const r=await fetch('https://api.brickognize.com/health/',{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();status($('#scanStatus'),'✅ Brickognize ist erreichbar.','ok');log('Brickognize Health: '+JSON.stringify(d));}catch(e){status($('#scanStatus'),'❌ Brickognize nicht erreichbar: '+e.message,'err');log('Brickognize Health FEHLER: '+e.stack);}});
 
-loadState();rbKey=safeGet(RB_KEY);$('#rbKey').value=rbKey;render();log('JavaScript erfolgreich gestartet.');log('v0.6.2 Datenmigration: '+(safeGet(OLD_STATE_KEY)?'Quelle vorhanden':'keine Alt-Daten'));log('Rebrickable-Key vorhanden: '+(rbKey?'JA':'NEIN'));if(rbKey)status($('#keyStatus'),'✅ Gespeicherter API-Key gefunden.','ok');
+
+function updateDashboard(){
+ const all=state.sets.length,built=state.sets.filter(s=>s.built).length,search=all-built,inv=state.sets.filter(s=>s.inventoryLoaded).length;
+ const assigned=Object.values(state.assignments||{}).reduce((a,b)=>a+Number(b||0),0);
+ const setv=(id,val)=>{const e=$(id);if(e)e.textContent=val};
+ setv('#homeSetCount',all);setv('#homeSearchCount',search);setv('#homeBuiltCount',built);setv('#homeInventoryCount',inv);setv('#homeAssignedCount',assigned);
+ const pct=all?Math.round(built/all*100):0;const p=$('#homeProgressBar');if(p)p.style.width=pct+'%';setv('#homeProgressText',pct+' % der Sets als gebaut markiert');
+}
+function activateView(name){
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));
+ document.querySelectorAll('.bottomNav button').forEach(b=>b.classList.toggle('active',b.dataset.target===name));
+ window.scrollTo({top:0,behavior:'instant'});
+ try{history.replaceState(null,'','#'+name)}catch(e){}
+}
+document.querySelectorAll('[data-open-view]').forEach(b=>b.addEventListener('click',()=>activateView(b.dataset.openView)));
+document.querySelectorAll('.bottomNav button').forEach(b=>b.addEventListener('click',()=>activateView(b.dataset.target)));
+$('#nextPart').addEventListener('click',()=>{selectedFile=null;$('#cameraPhoto').value='';$('#libraryPhoto').value='';$('#photoPreview').src='';$('#photoPreview').classList.add('hidden');$('#scanPart').disabled=true;$('#clearPhoto').disabled=true;$('#candidateWrap').classList.add('hidden');$('#matchWrap').classList.add('hidden');status($('#scanStatus'),'Bereit für das nächste Teil.','ok');setTimeout(()=>$('#cameraPhoto').click(),120);});
+async function exportBackup(){
+ const payload={version:'0.7',exportedAt:new Date().toISOString(),state:state,inventories:{}};
+ for(const s of state.sets){try{const inv=await getInventory(s.set_num);if(inv)payload.inventories[s.set_num]=inv}catch(e){}}
+ const blob=new Blob([JSON.stringify(payload)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bricksort-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);status($('#backupStatus'),'✅ Backup erstellt.','ok');
+}
+$('#exportBackup').addEventListener('click',exportBackup);
+$('#importBackupBtn').addEventListener('click',()=>$('#importBackup').click());
+$('#importBackup').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!data.state||!Array.isArray(data.state.sets))throw new Error('Ungültige Backup-Datei');if(!confirm('Backup wirklich importieren? Der aktuelle lokale Stand wird ersetzt.'))return;state=data.state;for(const [setNum,parts] of Object.entries(data.inventories||{}))await putInventory(setNum,parts);saveState();render();status($('#backupStatus'),'✅ Backup importiert.','ok');}catch(err){status($('#backupStatus'),'❌ Import fehlgeschlagen: '+err.message,'err');}});
+if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(e=>log('Service Worker: '+e.message)));}
+
+loadState();rbKey=safeGet(RB_KEY);$('#rbKey').value=rbKey;render();log('JavaScript erfolgreich gestartet.');log('v0.7 Datenmigration: '+(safeGet(OLD_STATE_KEY)?'Quelle vorhanden':'keine Alt-Daten'));log('Rebrickable-Key vorhanden: '+(rbKey?'JA':'NEIN'));if(rbKey)status($('#keyStatus'),'✅ Gespeicherter API-Key gefunden.','ok');const startView=['home','scan','sets','assignments','settings'].includes(location.hash.slice(1))?location.hash.slice(1):'home';activateView(startView);updateDashboard();
 })();
 </script>
-</main>
-</body>
-</html>
+</body></html>
