@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#eef6ff">
+<title>LEGO Sorter v0.5</title>
+<style>
+:root{--bg:#eef6ff;--card:#fff;--text:#142235;--muted:#617083;--blue:#1267d8;--green:#197a4f;--red:#a12b2b;--orange:#8a5d00;--line:#d8e5f1;--shadow:0 12px 32px rgba(26,66,106,.12)}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:linear-gradient(180deg,#e8f3ff,#f9fbfe);color:var(--text)}
+main{max-width:1000px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:12px;margin-bottom:16px}.logo{width:52px;height:52px;border-radius:16px;background:#121212;color:#fff;display:grid;place-items:center;font-size:28px}.title h1{margin:0;font-size:27px}.title p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.card{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px;margin-bottom:16px}.card h2{margin:0 0 8px;font-size:20px}.muted{color:var(--muted);font-size:13px;line-height:1.45}
+.status{margin-top:12px;border-radius:14px;padding:12px 14px;background:#eef4fb;border:1px solid var(--line);font-size:14px;line-height:1.4}.status.ok{background:#eaf8f1;color:var(--green);border-color:#bee3cf}.status.err{background:#fff0f0;color:var(--red);border-color:#efc5c5}.status.wait{background:#fff7e7;color:var(--orange);border-color:#ead6aa}
+label{display:block;font-weight:700;font-size:13px;margin:14px 0 6px}textarea,input{width:100%;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:14px;padding:13px;background:#fbfdff;color:var(--text);-webkit-user-select:text;user-select:text}textarea{min-height:92px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.row{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.btn{appearance:none;border:0;border-radius:14px;padding:12px 15px;font-weight:800;font-size:15px;cursor:pointer}.btn:disabled{opacity:.5}.primary{background:var(--blue);color:#fff}.secondary{background:#edf4fb;color:#16324f}.danger{background:#fff0f0;color:var(--red)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}.kpi{background:#fbfdff;border:1px solid var(--line);border-radius:16px;padding:12px}.kpi b{display:block;font-size:23px}.kpi span{font-size:12px;color:var(--muted)}
+@media(max-width:650px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.progress{height:12px;background:#e8eef5;border-radius:999px;overflow:hidden;margin-top:12px}.progress div{height:100%;width:0;background:linear-gradient(90deg,#1267d8,#1d9c62);transition:width .25s}
+.sets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}@media(max-width:720px){.sets{grid-template-columns:1fr}}.set{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:16px;padding:10px;background:#fff}.set.built{opacity:.58;background:#f4f7f5}.set img{width:64px;height:50px;object-fit:contain;background:#f2f5f8;border-radius:9px}.ph{width:64px;height:50px;border-radius:9px;background:#edf3f8;display:grid;place-items:center;font-weight:900;color:#6d8194}.name{font-weight:800;font-size:14px}.meta{font-size:12px;color:var(--muted);margin-top:3px}.toggle{border:1px solid var(--line);border-radius:11px;padding:8px 9px;font-weight:800;background:#eef7ff;color:#155eaa;white-space:nowrap}.toggle.on{background:#eaf8f1;color:var(--green)}
+.debug{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;word-break:break-word;background:#101923;color:#d9e8f6;border-radius:14px;padding:12px;max-height:220px;overflow:auto;margin-top:12px}.hidden{display:none}
+.small{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<header><div class="logo">🧱</div><div class="title"><h1>LEGO Sorter v0.5</h1><p>GitHub-Pages-Version · Rebrickable zuerst stabil testen</p></div></header>
+
+<section class="card">
+<h2>1. Rebrickable verbinden</h2>
+<p class="muted">Der API-Key wird nur im lokalen Speicher dieses Browsers gespeichert. Er wird nicht in GitHub hochgeladen und steht nicht im Quellcode.</p>
+<label for="rbKey">Rebrickable API-Key</label>
+<textarea id="rbKey" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" placeholder="API-Key hier einfügen"></textarea>
+<div class="row">
+<button class="btn primary" id="saveKey" type="button">Key lokal speichern</button>
+<button class="btn secondary" id="testKey" type="button">Verbindung testen</button>
+<button class="btn danger" id="clearKey" type="button">Key löschen</button>
+</div>
+<div id="keyStatus" class="status">Bereit. Erst Key einfügen, dann „Key lokal speichern“.</div>
+</section>
+
+<section class="card">
+<h2>2. Deine 46 Sets</h2>
+<p class="muted">Alle von dir genannten Setnummern sind bereits enthalten. „Gebaut“ bedeutet: Dieses Set wird später bei der Teilezuordnung nicht durchsucht.</p>
+<div class="kpis"><div class="kpi"><b id="countAll">46</b><span>Sets gesamt</span></div><div class="kpi"><b id="countLoaded">0</b><span>Setdaten geladen</span></div><div class="kpi"><b id="countBuilt">0</b><span>gebaut</span></div><div class="kpi"><b id="countSearch">46</b><span>in Suche</span></div></div>
+<div class="row"><button class="btn primary" id="loadMeta" type="button">Alle Setdaten laden</button><button class="btn secondary" id="stopLoad" type="button" disabled>Stoppen</button></div>
+<div class="progress"><div id="progressBar"></div></div>
+<div id="importStatus" class="status">Noch keine Setdaten geladen.</div>
+<div id="setList" class="sets"></div>
+</section>
+
+<section class="card">
+<h2>Diagnose</h2>
+<p class="muted">Falls am iPad wieder ein Button nicht reagiert, sehen wir hier sofort, ob JavaScript läuft, LocalStorage funktioniert und welcher API-Aufruf fehlschlägt.</p>
+<div class="row"><button class="btn secondary" id="runDiag" type="button">Diagnose ausführen</button></div>
+<div id="diag" class="debug">App gestartet …</div>
+</section>
+
+<script>
+'use strict';
+(function(){
+const $=s=>document.querySelector(s);
+const logBox=$('#diag');
+function log(msg){const ts=new Date().toLocaleTimeString(); logBox.textContent += `\n[${ts}] ${msg}`; logBox.scrollTop=logBox.scrollHeight;}
+function status(el,msg,kind=''){el.textContent=msg;el.className='status'+(kind?' '+kind:'');}
+function norm(n){return String(n).trim().endsWith('-1')?String(n).trim():String(n).trim()+'-1';}
+
+const initial=[
+['Technic','42168'],['Technic','42090'],['Technic','42122'],['Technic','42167'],['Technic','42164'],['Technic','42165'],['Technic','42197'],['Technic','42089'],['Technic','42093'],['Technic','42073'],['Technic','42046'],['Technic','42057'],['Technic','42037'],['Technic','42031'],['Technic','42084'],['Technic','42114'],['Technic','42099'],['Technic','42027'],
+['City','60183'],['City','60478'],['City','60491'],['City','60124'],['City','60023'],['City','60408'],['City','60420'],['City','60414'],['City','60409'],['City','60393'],['City','60374'],['City','60411'],['City','60445'],['City','60113'],['City','60156'],['City','60114'],['City','60402'],['City','60128'],['City','60241'],
+['Indiana Jones','77012'],['Creator 3in1','31160'],['Creator 3in1','31100'],['Creator 3in1','31146'],['Ninjago','71827'],['Ninjago','71838'],['Rock Raiders','4920'],['Castle','8200'],['Castle','8140']
+].map(([category,num])=>({category,set_num:norm(num),name:'',year:null,num_parts:null,set_img_url:'',built:false,loaded:false}));
+
+let state={sets:initial};
+let rbKey=''; let stop=false; let lastCall=0;
+function safeGet(k){try{return localStorage.getItem(k)||''}catch(e){log('LocalStorage lesen fehlgeschlagen: '+e.message);return ''}}
+function safeSet(k,v){try{localStorage.setItem(k,v);return true}catch(e){log('LocalStorage speichern fehlgeschlagen: '+e.message);return false}}
+function saveState(){safeSet('legoSorterV05State',JSON.stringify(state));}
+function loadState(){try{const raw=safeGet('legoSorterV05State');if(raw){const old=JSON.parse(raw);if(old&&Array.isArray(old.sets)){const byNum=new Map(old.sets.map(s=>[s.set_num,s]));state.sets=initial.map(s=>({...s,...(byNum.get(s.set_num)||{})}));}}}catch(e){log('Sammlung konnte nicht geladen werden: '+e.message)}}
+
+function render(){
+ const list=$('#setList'); list.innerHTML='';
+ state.sets.forEach(s=>{
+  const d=document.createElement('div'); d.className='set'+(s.built?' built':'');
+  const visual=s.set_img_url?`<img src="${escapeHtml(s.set_img_url)}" alt="">`:`<div class="ph">${escapeHtml(s.set_num.replace('-1',''))}</div>`;
+  d.innerHTML=`${visual}<div><div class="name">${escapeHtml(s.name||s.set_num.replace('-1',''))}</div><div class="meta">${escapeHtml(s.category)}${s.year?' · '+s.year:''}${s.num_parts?' · '+s.num_parts+' Teile':''}${s.loaded?' · geladen':''}</div></div><button class="toggle ${s.built?'on':''}" type="button">${s.built?'✓ Gebaut':'🔎 Suchen'}</button>`;
+  d.querySelector('button').addEventListener('click',()=>{s.built=!s.built;saveState();render();});
+  list.appendChild(d);
+ });
+ const loaded=state.sets.filter(s=>s.loaded).length,built=state.sets.filter(s=>s.built).length;
+ $('#countAll').textContent=state.sets.length;$('#countLoaded').textContent=loaded;$('#countBuilt').textContent=built;$('#countSearch').textContent=state.sets.length-built;
+}
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+async function rb(path){
+ if(!rbKey) throw new Error('Kein API-Key eingetragen');
+ const now=Date.now(); const waitFor=Math.max(0,1100-(now-lastCall)); if(waitFor) await wait(waitFor); lastCall=Date.now();
+ const sep=path.includes('?')?'&':'?';
+ const url='https://rebrickable.com/api/v3/lego/'+path+sep+'key='+encodeURIComponent(rbKey);
+ const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),18000);
+ try{
+  log('GET '+url.replace(encodeURIComponent(rbKey),'***KEY***'));
+  const r=await fetch(url,{method:'GET',mode:'cors',cache:'no-store',signal:ctrl.signal,headers:{'Accept':'application/json'}});
+  const text=await r.text();
+  if(!r.ok){let detail='';try{detail=JSON.parse(text).detail||''}catch(e){} throw new Error('HTTP '+r.status+(detail?' – '+detail:''));}
+  return JSON.parse(text);
+ }catch(e){if(e.name==='AbortError')throw new Error('Zeitüberschreitung beim API-Aufruf');throw e;}finally{clearTimeout(timer)}
+}
+
+$('#saveKey').addEventListener('click',()=>{
+ rbKey=$('#rbKey').value.trim();
+ if(!rbKey){status($('#keyStatus'),'Bitte zuerst den API-Key einfügen.','err');return;}
+ const ok=safeSet('legoSorterRbKey',rbKey);
+ if(ok){status($('#keyStatus'),'✅ Key lokal gespeichert. Jetzt „Verbindung testen“ drücken.','ok');log('API-Key in LocalStorage gespeichert.');}
+ else{status($('#keyStatus'),'⚠️ Speichern wurde vom Browser blockiert. Der Key bleibt nur bis zum Schließen der Seite aktiv.','wait');}
+});
+$('#clearKey').addEventListener('click',()=>{rbKey='';$('#rbKey').value='';try{localStorage.removeItem('legoSorterRbKey')}catch(e){}status($('#keyStatus'),'API-Key wurde aus diesem Browser gelöscht.','ok');log('API-Key gelöscht.');});
+$('#testKey').addEventListener('click',async()=>{
+ rbKey=$('#rbKey').value.trim()||safeGet('legoSorterRbKey'); $('#rbKey').value=rbKey;
+ if(!rbKey){status($('#keyStatus'),'Bitte zuerst den API-Key einfügen.','err');return;}
+ status($('#keyStatus'),'⏳ Rebrickable wird getestet …','wait'); $('#testKey').disabled=true;
+ try{const d=await rb('sets/42122-1/');status($('#keyStatus'),'✅ Verbindung funktioniert. Testset: '+d.name,'ok');log('Rebrickable-Test erfolgreich: '+d.name);}
+ catch(e){status($('#keyStatus'),'❌ Verbindungstest fehlgeschlagen: '+e.message,'err');log('Rebrickable-Test FEHLER: '+e.stack);}
+ finally{$('#testKey').disabled=false;}
+});
+
+$('#loadMeta').addEventListener('click',async()=>{
+ rbKey=$('#rbKey').value.trim()||safeGet('legoSorterRbKey'); $('#rbKey').value=rbKey;
+ if(!rbKey){status($('#importStatus'),'Bitte zuerst den API-Key eintragen und Verbindung testen.','err');return;}
+ stop=false; $('#loadMeta').disabled=true;$('#stopLoad').disabled=false; let done=0,fail=0;
+ for(const s of state.sets){
+  if(stop)break;
+  status($('#importStatus'),`⏳ ${done+1} von ${state.sets.length}: ${s.set_num.replace('-1','')} wird geladen …`,'wait');
+  try{const d=await rb('sets/'+encodeURIComponent(s.set_num)+'/'); s.name=d.name||s.name;s.year=d.year||null;s.num_parts=d.num_parts||null;s.set_img_url=d.set_img_url||'';s.loaded=true;s.error='';}
+  catch(e){fail++;s.error=e.message;log('Set '+s.set_num+' FEHLER: '+e.message);}
+  done++; saveState(); render(); $('#progressBar').style.width=(done/state.sets.length*100).toFixed(1)+'%';
+ }
+ $('#loadMeta').disabled=false;$('#stopLoad').disabled=true;
+ if(stop)status($('#importStatus'),`Gestoppt nach ${done} von ${state.sets.length} Sets.`,'wait');
+ else if(fail)status($('#importStatus'),`Fertig: ${done-fail} geladen, ${fail} Fehler. Noch einmal starten lädt fehlende Sets erneut.`,'wait');
+ else status($('#importStatus'),'✅ Alle 46 Setdaten wurden geladen.','ok');
+});
+$('#stopLoad').addEventListener('click',()=>{stop=true;status($('#importStatus'),'Stop wird nach dem aktuellen API-Aufruf ausgeführt …','wait');});
+
+$('#runDiag').addEventListener('click',async()=>{
+ log('--- Diagnose gestartet ---');
+ log('URL: '+location.href);
+ log('Protokoll: '+location.protocol);
+ log('Online: '+navigator.onLine);
+ log('User-Agent: '+navigator.userAgent);
+ const test='ok-'+Date.now();const ls=safeSet('legoSorterDiag',test)&&safeGet('legoSorterDiag')===test;log('LocalStorage: '+(ls?'OK':'FEHLER'));
+ log('Fetch API: '+(typeof fetch==='function'?'OK':'FEHLER'));
+ log('JavaScript läuft: OK');
+ status($('#keyStatus'),'Diagnose abgeschlossen – Details stehen unten.','ok');
+});
+
+loadState(); rbKey=safeGet('legoSorterRbKey'); $('#rbKey').value=rbKey; render();
+log('JavaScript erfolgreich gestartet.');
+log('LocalStorage-Key vorhanden: '+(rbKey?'JA':'NEIN'));
+if(rbKey) status($('#keyStatus'),'Gespeicherter API-Key gefunden. Du kannst direkt „Verbindung testen“ drücken.','ok');
+})();
+</script>
+</main>
+</body>
+</html>
